@@ -1,0 +1,162 @@
+---
+# Automation blueprint for IKEA TRADFRI integrated with ZHA. Model: Remote Control N2
+
+blueprint:
+  source_url: https://github.com/Sergi0Martin/home-assistant-config/blueprints/zha_ikea_tradfri_remote_control_N2.yaml
+
+  name: "ZHA - IKEA TRADFRI - Model: Remote Control N2"
+
+  description: >-
+    Automation for IKEA TRADFRI remote control connected with ZHA.
+
+  domain: automation
+
+  input:
+    remote:
+      name: IKEA TRADFRI
+      description: Select the remote control, must be model 'Remote Control N2'.
+      selector:
+        device:
+          integration: zha
+          manufacturer: IKEA of Sweden
+          model: Remote Control N2
+    dimup_short:
+      name: Short Press - Dim Up Button
+      description: The action to perform on Short Press of the Dim Up
+      selector:
+        action:
+      default: []
+    dimup_long:
+      name: Long Press - Dim Up Button
+      description: The action to perform on Long Press of the Dim Up Button
+      selector:
+        action:
+      default: []
+    dimdown_short:
+      name: Short Press - Dim Down Button
+      description: The action to perform on Short Press of the Dim Down Button
+      selector:
+        action:
+      default: []
+    dimdown_long:
+      name: Long Press - Dim Down Button
+      description: The action to perform on Long Press of the Dim Down Button
+      selector:
+        action:
+      default: []
+
+    dim_long_released:
+      name: Long Press Released - Dim Down or Up Button
+      description: The action to release after Long Press of the Dim Down or Up Button
+      selector:
+        action:
+      default: []
+
+    colordown_short:
+      name: Short Press - Color Down Button
+      description: The action to perform on Short Press of the Color Down Button
+      selector:
+        action:
+      default: []
+
+    colordown_long:
+      name: Long Press - Color Down Button
+      description: The action to perform on Long Press of the Color Down Button
+      selector:
+        action:
+      default: []
+
+    colorup_short:
+      name: Short Press - Color Up Button
+      description: The action to perform on Short Press of the Color Up Button
+      selector:
+        action:
+      default: []
+
+    colorup_long:
+      name: Long Press - Color Up Button
+      description: The action to perform on Long Press of the Color Up Button
+      selector:
+        action:
+      default: []
+
+    colordown_long_released:
+      name: Long Press Released - Color Down or Up Button
+      description: The action to release after Long Press of the Color Down or Up Button
+      selector:
+        action:
+      default: []
+
+mode: restart
+max_exceeded: silent
+
+trigger:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: !input remote
+
+action:
+  - choose:
+      # Short-Press on the dim-up button.
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.command == "on" }}'
+        sequence: !input dimup_short
+
+      # Long-Press on the dim-up button.
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.command == "move_with_on_off" }}'
+        sequence: !input dimup_long
+
+      # Short-Press on the dim-down button.
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.command == "off" }}'
+        sequence: !input dimdown_short
+
+      # Long-Press on the dim-down button.
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.command == "move" }}'
+        sequence: !input dimdown_long
+
+      # Long-Press-Released on the dim-up or dim-down button.
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.command == "stop_with_on_off" }}'
+        sequence: !input dim_long_released
+
+      # Short-Press on the color-down button.
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.command == "press" and trigger.event.data.params.param1 == 257 }}'
+        sequence: !input colordown_short
+
+      # Long-Press on the color-down button.
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.command == "hold" and trigger.event.data.params.param1 == 3329 }}'
+        sequence: !input colordown_long
+
+      # Short-Press on the color-up button.
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.command == "press" and trigger.event.data.params.param1 == 256 }}'
+        sequence: !input colorup_short
+
+      # Long-Press on the color-up button.
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.command == "hold" and trigger.event.data.params.param1 == 3328 }}'
+        sequence: !input colorup_long      
+      
+      # Long-Press-Released on the color-down or color-up button.
+      - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.command == "release" }}'
+        sequence: !input colordown_long_released
+
+    # Any other event will cancel the repeat loops.
+    default: []
