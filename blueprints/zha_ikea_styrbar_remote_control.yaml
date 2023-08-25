@@ -1,13 +1,12 @@
 ---
 # Automation blueprint for IKEA TRADFRI integrated with ZHA. Model: Remote Control N2
-
 blueprint:
-  source_url: https://github.com/Sergi0Martin/home-assistant-config/blob/main/blueprints/zha_ikea_tradfri_remote_control_N2.yaml
+  source_url: https://github.com/Sergi0Martin/home-assistant-config/blob/main/blueprints/zha_ikea_styrbar_remote_control.yaml
 
-  name: "ZHA - IKEA TRADFRI - Model: Remote Control N2"
+  name: "ZHA - IKEA E2001/E2002 STYRBAR Remote control"
 
   description: >-
-    Automation for IKEA TRADFRI remote control connected with ZHA.
+    Automation for IKEA STYRBAR remote control integrated on ZHA.
 
   domain: automation
 
